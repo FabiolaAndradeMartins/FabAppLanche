@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FabAppLanche.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FabAppLanche
 {
@@ -19,6 +20,8 @@ namespace FabAppLanche
     		builder.Logging.AddDebug();
 #endif
             builder.Services.AddHttpClient();
+            builder.Services.AddSingleton<ApiService>();
+
             return builder.Build();
         }
     }
