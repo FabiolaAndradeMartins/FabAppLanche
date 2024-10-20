@@ -1,4 +1,6 @@
-﻿using FabAppLanche.Services;
+﻿
+using FabAppLanche.Services;
+using FabAppLanche.Validations;
 using Microsoft.Extensions.Logging;
 
 namespace FabAppLanche
@@ -21,6 +23,7 @@ namespace FabAppLanche
 #endif
             builder.Services.AddHttpClient();
             builder.Services.AddSingleton<ApiService>();
+            builder.Services.AddSingleton<IValidator, Validator>();
 
             return builder.Build();
         }

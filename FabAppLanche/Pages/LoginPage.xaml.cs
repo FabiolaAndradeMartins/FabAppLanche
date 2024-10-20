@@ -1,15 +1,19 @@
 using FabAppLanche.Services;
+using FabAppLanche.Validations;
+
 
 namespace FabAppLanche.Pages;
 
 public partial class LoginPage : ContentPage
 {
     private readonly ApiService _apiService;
+    private readonly IValidator _validator;
 
-    public LoginPage(ApiService apiService)
+    public LoginPage(ApiService apiService, IValidator validator)
     {
         InitializeComponent();
         _apiService = apiService;
+        _validator = validator;
     }
 
     private async void BtnSignIn_Clicked(object sender, EventArgs e)
@@ -36,13 +40,10 @@ public partial class LoginPage : ContentPage
         {
             await DisplayAlert("Erro", "Algo deu errado", "Cancelar");
         }
-
     }
 
     private async void TapRegister_Tapped(object sender, TappedEventArgs e)
     {
-
-        await Navigation.PushAsync(new InscricaoPage(_apiService));
-
+        await Navigation.PushAsync(new InscricaoPage(_apiService, _validator));
     }
 }

@@ -13,7 +13,7 @@ namespace FabAppLanche.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://lf3jvkgb-7066.brs.devtunnels.ms/";
+        private readonly string _baseUrl = "https://z3tvrpmc-7235.uks1.devtunnels.ms/";
         private readonly ILogger<ApiService> _logger;
 
         JsonSerializerOptions _serializerOptions;
