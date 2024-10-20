@@ -58,29 +58,55 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\agua_mineral1.jpeg" />
 	  <None Remove="Resources\Images\cart.png" />
+	  <None Remove="Resources\Images\coca_cola1.jpeg" />
+	  <None Remove="Resources\Images\combo1.jpeg" />
+	  <None Remove="Resources\Images\combo2.jpeg" />
+	  <None Remove="Resources\Images\combo3.jpeg" />
+	  <None Remove="Resources\Images\combos1.png" />
 	  <None Remove="Resources\Images\confirmado.gif" />
+	  <None Remove="Resources\Images\cookie1.jpeg" />
+	  <None Remove="Resources\Images\cookie2.jpeg" />
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\edit.png" />
 	  <None Remove="Resources\Images\emptycart.jpg" />
 	  <None Remove="Resources\Images\faq.png" />
 	  <None Remove="Resources\Images\foodicon.png" />
+	  <None Remove="Resources\Images\guarana1.jpeg" />
+	  <None Remove="Resources\Images\hamburger1.jpeg" />
+	  <None Remove="Resources\Images\hamburger3.jpeg" />
+	  <None Remove="Resources\Images\hamburger4.jpeg" />
 	  <None Remove="Resources\Images\heart.png" />
 	  <None Remove="Resources\Images\heartfill.png" />
 	  <None Remove="Resources\Images\home.png" />
+	  <None Remove="Resources\Images\lanche.png" />
 	  <None Remove="Resources\Images\lancheicon1.png" />
+	  <None Remove="Resources\Images\lanches1.png" />
 	  <None Remove="Resources\Images\lanchesico.png" />
 	  <None Remove="Resources\Images\lanchesimg.png" />
+	  <None Remove="Resources\Images\lanche_natural1.jpeg" />
+	  <None Remove="Resources\Images\lanche_natural2.jpeg" />
+	  <None Remove="Resources\Images\lanche_vegano1.jpeg" />
 	  <None Remove="Resources\Images\leftarrow.png" />
 	  <None Remove="Resources\Images\logout.png" />
+	  <None Remove="Resources\Images\naturais1.png" />
 	  <None Remove="Resources\Images\orders.png" />
 	  <None Remove="Resources\Images\pedidos.png" />
+	  <None Remove="Resources\Images\pepsi1.jpeg" />
 	  <None Remove="Resources\Images\perfilconfig.png" />
 	  <None Remove="Resources\Images\perguntas.png" />
 	  <None Remove="Resources\Images\profile.png" />
 	  <None Remove="Resources\Images\profilesettings.png" />
+	  <None Remove="Resources\Images\refrigerantes1.png" />
 	  <None Remove="Resources\Images\rightarrow.png" />
+	  <None Remove="Resources\Images\sobremesas1.png" />
 	  <None Remove="Resources\Images\splash_lanche.svg" />
+	  <None Remove="Resources\Images\sucos1.png" />
+	  <None Remove="Resources\Images\suco_laranja.jpeg" />
+	  <None Remove="Resources\Images\suco_morango1.jpeg" />
+	  <None Remove="Resources\Images\suco_uva1.jpeg" />
+	  <None Remove="Resources\Images\torta_suica1.jpeg" />
 	  <None Remove="Resources\Images\uploadphoto.png" />
 	  <None Remove="Resources\Splash\lanche.svg" />
 	</ItemGroup>
