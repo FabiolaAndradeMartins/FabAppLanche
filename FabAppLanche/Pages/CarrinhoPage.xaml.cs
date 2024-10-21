@@ -11,6 +11,7 @@ public partial class CarrinhoPage : ContentPage
     private readonly IValidator _validator;
     private bool _loginPageDisplayed = false;
     private bool _isNavigatingToEmptyCartPage = false;
+    
 
     private ObservableCollection<CarrinhoCompraItem>
         ItensCarrinhoCompra = new ObservableCollection<CarrinhoCompraItem>();
@@ -25,25 +26,58 @@ public partial class CarrinhoPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await GetItensCarrinhoCompra();
 
-        bool enderecoSalvo = Preferences.ContainsKey("endereco");
+        if (IsNavigatingToEmptyCartPage()) return;
 
-        if (enderecoSalvo)
-        { 
-         string nome = Preferences.Get ("nome", string.Empty);
-         string endereco = Preferences.Get ("endereco", string.Empty);
-         string telefone = Preferences.Get("telefone", string.Empty);
+        bool hasItems = await GetItensCarrinhoCompra();
 
-         LblEndereco.Text = $"{nome}\n{endereco}\n{telefone}";        
+        if (hasItems)
+        {
+            ExibirEndereco();
         }
         else
         {
-            LblEndereco.Text = "Informe o seu endereço:";
-        }  
+            await NavegarParaCarrinhoVazio();
+        }
     }
 
-    private async Task<IEnumerable<CarrinhoCompraItem>> GetItensCarrinhoCompra()
+    private bool IsNavigatingToEmptyCartPage()
+    {
+        if (_isNavigatingToEmptyCartPage)
+        {
+            _isNavigatingToEmptyCartPage = false;
+            return true;
+        }
+        return false;
+    }
+
+    private void ExibirEndereco()
+    {
+        bool enderecoSalvo = Preferences.ContainsKey("endereco");
+
+        if (enderecoSalvo)
+        {
+            string nome = Preferences.Get("nome", string.Empty);
+            string endereco = Preferences.Get("endereco", string.Empty);
+            string telefone = Preferences.Get("telefone", string.Empty);
+
+            // Formatar os dados conforme desejado na label
+            LblEndereco.Text = $"{nome}\n{endereco} \n{telefone}";
+        }
+        else
+        {
+            LblEndereco.Text = "Informe o seu endereço";
+        }
+    }
+
+    private async Task NavegarParaCarrinhoVazio()
+    {
+        LblEndereco.Text = string.Empty;
+        _isNavigatingToEmptyCartPage = true;
+        await Navigation.PushAsync(new CarrinhoVazioPage());
+    }
+
+    private async Task<bool> GetItensCarrinhoCompra()
     {
         try
         {
@@ -53,34 +87,40 @@ public partial class CarrinhoPage : ContentPage
 
             if (errorMessage == "Unauthorized" && !_loginPageDisplayed)
             {
-                // Redirecionar para a página de login
+                // Redirecionar para a p?gina de login
                 await DisplayLoginPage();
-                return Enumerable.Empty<CarrinhoCompraItem>();
+                return false;
             }
 
             if (itensCarrinhoCompra == null)
             {
                 await DisplayAlert("Erro", errorMessage ?? "Não foi possivel obter os itens do carrinho de compra.", "OK");
-                return Enumerable.Empty<CarrinhoCompraItem>();
+                return false;
             }
 
             ItensCarrinhoCompra.Clear();
+
             foreach (var item in itensCarrinhoCompra)
             {
                 ItensCarrinhoCompra.Add(item);
             }
 
             CvCarrinho.ItemsSource = ItensCarrinhoCompra;
-            AtualizaPrecoTotal();
-            return ItensCarrinhoCompra;
+            AtualizaPrecoTotal(); // Atualizar o preco total ap?s atualizar os itens do carrinho
 
+            if (!ItensCarrinhoCompra.Any())
+            {
+                return false;
+            }
+            return true;
         }
         catch (Exception ex)
         {
             await DisplayAlert("Erro", $"Ocorreu um erro inesperado: {ex.Message}", "OK");
-            return Enumerable.Empty<CarrinhoCompraItem>();
+            return false;
         }
     }
+
     private void AtualizaPrecoTotal()
     {
         try
@@ -145,5 +185,42 @@ public partial class CarrinhoPage : ContentPage
     private void BtnEditaEndereco_Clicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new EnderecoPage());
+    }
+
+    private async void TapConfirmarPedido_Tapped(object sender, TappedEventArgs e)
+    {
+        if (ItensCarrinhoCompra == null || !ItensCarrinhoCompra.Any())
+        {
+            await DisplayAlert("Informação", "Seu carrinho está vazio ou o pedido já foi confirmado.", "OK");
+            return;
+        }
+
+        var pedido = new Pedido()
+        {
+            Endereco = LblEndereco.Text,
+            UsuarioId = Preferences.Get("usuarioid", 0),
+            ValorTotal = Convert.ToDecimal(LblPrecoTotal.Text)
+        };
+
+        var response = await _apiService.ConfirmarPedido(pedido);
+
+        if (response.HasError)
+        {
+            if (response.ErrorMessage == "Unauthorized")
+            {
+                // Redirecionar para a p gina de login
+                await DisplayLoginPage();
+                return;
+            }
+            await DisplayAlert("Opa !!!", $"Algo deu errado: {response.ErrorMessage}", "Cancelar");
+            return;
+        }
+
+        ItensCarrinhoCompra.Clear();
+        LblEndereco.Text = "Informe o seu endereço";
+        LblPrecoTotal.Text = "0.00";
+
+        await Navigation.PushAsync(new PedidoConfirmadoPage());
+
     }
 }
