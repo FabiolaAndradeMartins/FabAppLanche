@@ -195,9 +195,9 @@
                            WidthRequest="25"
                            VerticalOptions="Center" />
 
-                    <HorizontalStackLayout.GestureRecognizers>
+                    <!--<HorizontalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer x:Name="TapConfirmarPedido" Tapped="TapConfirmarPedido_Tapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
+                    </HorizontalStackLayout.GestureRecognizers>-->
 
                 </HorizontalStackLayout>
 

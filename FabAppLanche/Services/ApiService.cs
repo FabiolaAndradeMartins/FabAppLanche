@@ -272,7 +272,5 @@ namespace FabAppLanche.Services
             }
         }
 
-
-
     }
 }

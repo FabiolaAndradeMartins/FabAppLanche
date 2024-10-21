@@ -26,6 +26,21 @@ public partial class CarrinhoPage : ContentPage
     {
         base.OnAppearing();
         await GetItensCarrinhoCompra();
+
+        bool enderecoSalvo = Preferences.ContainsKey("endereco");
+
+        if (enderecoSalvo)
+        { 
+         string nome = Preferences.Get ("nome", string.Empty);
+         string endereco = Preferences.Get ("endereco", string.Empty);
+         string telefone = Preferences.Get("telefone", string.Empty);
+
+         LblEndereco.Text = $"{nome}\n{endereco}\n{telefone}";        
+        }
+        else
+        {
+            LblEndereco.Text = "Informe o seu endereço:";
+        }  
     }
 
     private async Task<IEnumerable<CarrinhoCompraItem>> GetItensCarrinhoCompra()
@@ -87,15 +102,17 @@ public partial class CarrinhoPage : ContentPage
 
     private async void BtnDecrementar_Clicked(object sender, EventArgs e)
     {
-        {
-            if (sender is Button button && button.BindingContext is CarrinhoCompraItem itemCarrinho)
-            {
-                itemCarrinho.Quantidade++;
-                AtualizaPrecoTotal();
-                await _apiService.AtualizaQuantidadeItemCarrinho(itemCarrinho.ProdutoId, "aumentar");
-            }
+         if (sender is Button button && button.BindingContext is CarrinhoCompraItem itemCarrinho)
+         {
+                if (itemCarrinho.Quantidade == 1) return;
+                else
+                {
+                    itemCarrinho.Quantidade--;
+                    AtualizaPrecoTotal();
+                    await _apiService.AtualizaQuantidadeItemCarrinho(itemCarrinho.ProdutoId, "diminuir");
 
-        }
+                }            
+         }        
     }
 
     private async void BtnIncrementar_Clicked(object sender, EventArgs e)
@@ -113,8 +130,8 @@ public partial class CarrinhoPage : ContentPage
 
         if (sender is ImageButton button && button.BindingContext is CarrinhoCompraItem itemCarrinho)
         {
-            bool resposta = await DisplayAlert("Confirma  o",
-                          "Tem certeza que deseja excluir este item do carrinho?", "Sim", "N o");
+            bool resposta = await DisplayAlert("Confirmação",
+                          "Tem certeza que deseja excluir este item do carrinho?", "Sim", "Não");
             if (resposta)
             {
                 ItensCarrinhoCompra.Remove(itemCarrinho);
@@ -127,6 +144,6 @@ public partial class CarrinhoPage : ContentPage
 
     private void BtnEditaEndereco_Clicked(object sender, EventArgs e)
     {
-
+        Navigation.PushAsync(new EnderecoPage());
     }
 }
