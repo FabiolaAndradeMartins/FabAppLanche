@@ -125,7 +125,7 @@
                     Padding="30"
                     Margin="0,0,0,5"
                     BackgroundColor="#18565f"
-                    FontSize="15"  
+                    FontSize="13"  
                     FontAttributes="Bold"
                     TextColor="White"
                     x:Name="BtnIncluirNoCarrinho" Clicked="BtnIncluirNoCarrinho_Clicked"/>
