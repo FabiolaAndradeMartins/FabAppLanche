@@ -16,6 +16,8 @@ public partial class HomePage : ContentPage
         _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         LblNomeUsuario.Text = "Olá, " + Preferences.Get("usuarionome", string.Empty);
         _validator = validator;
+        Title = AppConfig.tituloHomePage;
+
     }
 
     protected override async void OnAppearing()
@@ -118,4 +120,20 @@ public partial class HomePage : ContentPage
         _loginPageDisplayed = true;
         await Navigation.PushAsync(new LoginPage(_apiService, _validator));
     }
+    private void CvCategorias_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var currentSelection = e.CurrentSelection.FirstOrDefault() as Categoria;
+
+        if (currentSelection == null) return;
+
+
+        Navigation.PushAsync(new ListaProdutosPage(currentSelection.Id,
+                                                     currentSelection.Nome!,
+                                                     _apiService,
+                                                     _validator));
+
+        ((CollectionView)sender).SelectedItem = null;
+    }
+
+
 }
