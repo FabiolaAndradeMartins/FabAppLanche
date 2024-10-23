@@ -11,6 +11,6 @@ namespace FabAppLanche
         public static readonly string BaseUrl = "https://z3tvrpmc-7235.uks1.devtunnels.ms/";
         //public static readonly string BaseUrl = "https://localhost:7235/";
         public static readonly string tituloHomePage = "Lanches Fab";
-
+        public static readonly string PerfilImagemPadrao = "Resources/Images/user.png";
     }
 }

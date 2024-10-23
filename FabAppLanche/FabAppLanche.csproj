@@ -108,6 +108,7 @@
 	  <None Remove="Resources\Images\suco_uva1.jpeg" />
 	  <None Remove="Resources\Images\torta_suica1.jpeg" />
 	  <None Remove="Resources\Images\uploadphoto.png" />
+	  <None Remove="Resources\Images\user.png" />
 	  <None Remove="Resources\Splash\lanche.svg" />
 	</ItemGroup>
 

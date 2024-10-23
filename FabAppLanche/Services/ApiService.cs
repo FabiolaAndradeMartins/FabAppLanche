@@ -152,6 +152,32 @@ namespace FabAppLanche.Services
                 return new ApiResponse<bool> { ErrorMessage = ex.Message };
             }
         }
+        public async Task<ApiResponse<bool>> UploadImagemUsuario(byte[] imageArray)
+        {
+            try
+            {
+                var content = new MultipartFormDataContent();
+                content.Add(new ByteArrayContent(imageArray), "imagem", "image.jpg");
+                var response = await PostRequest("api/usuarios/uploadfotousuario", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorMessage = response.StatusCode == HttpStatusCode.Unauthorized
+                      ? "Unauthorized"
+                      : $"Erro ao enviar requisição HTTP: {response.StatusCode}";
+
+                    _logger.LogError($"Erro ao enviar requisição HTTP: {response.StatusCode}");
+                    return new ApiResponse<bool> { ErrorMessage = errorMessage };
+                }
+                return new ApiResponse<bool> { Data = true };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao fazer upload da imagem do usuário: {ex.Message}");
+                return new ApiResponse<bool> { ErrorMessage = ex.Message };
+            }
+        }
+
 
         private async Task<HttpResponseMessage> PostRequest(string uri, HttpContent content)
         {
@@ -184,6 +210,12 @@ namespace FabAppLanche.Services
         {
             var endpoint = $"api/ItensCarrinhoCompra/{usuarioId}";
             return await GetAsync<List<CarrinhoCompraItem>>(endpoint);
+        }
+
+        public async Task<(ImagemPerfil? ImagemPerfil, string? ErrorMessage)> GetImagemPerfilUsuario()
+        {
+            string endpoint = "api/usuarios/ImagemPerfilUsuario";
+            return await GetAsync<ImagemPerfil>(endpoint);
         }
 
         private async Task<(T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint)
