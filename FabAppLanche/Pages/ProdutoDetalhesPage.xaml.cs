@@ -1,6 +1,7 @@
 using FabAppLanche.Models;
 using FabAppLanche.Services;
 using FabAppLanche.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace FabAppLanche.Pages;
 
@@ -10,6 +11,10 @@ public partial class ProdutoDetalhesPage : ContentPage
     private readonly IValidator _validator;
     private int _produtoId;
     private bool _loginPageDisplayed = false;
+    private FavoritosService _favoritosService = new FavoritosService();
+
+    private string? _imagemUrl;
+
 
     public ProdutoDetalhesPage(int produtoId,
                                 string produtoNome,
@@ -29,6 +34,8 @@ public partial class ProdutoDetalhesPage : ContentPage
     {
         base.OnAppearing();
         await GetProdutoDetalhes(_produtoId);
+        AtualizaFavoritoButton();
+
     }
 
     private async Task<Produto?> GetProdutoDetalhes(int produtoId)
@@ -57,6 +64,7 @@ public partial class ProdutoDetalhesPage : ContentPage
             LblProdutoPreco.Text = produtoDetalhe.Preco.ToString();
             LblProdutoDescricao.Text = produtoDetalhe.Detalhe;
             LblPrecoTotal.Text = produtoDetalhe.Preco.ToString();
+            _imagemUrl = produtoDetalhe.CaminhoImagem;
         }
         else
         {
@@ -67,79 +75,120 @@ public partial class ProdutoDetalhesPage : ContentPage
     }
 
     //métodos que serão implementados mais adiante no curso 
-    private void ImagemBtnFavorito_Clicked(object sender, EventArgs e) { }
-    private void BtnAdiciona_Clicked(object sender, EventArgs e) 
-    {
-        if (int.TryParse(LblQuantidade.Text, out int quantidade) &&
-       decimal.TryParse(LblProdutoPreco.Text, out decimal precoUnitario))
-        {
-            // Incrementa a quantidade
-            quantidade++;
-            LblQuantidade.Text = quantidade.ToString();
-
-            // Calcula o preço total
-            var precoTotal = quantidade * precoUnitario;
-            LblPrecoTotal.Text = precoTotal.ToString(); // Formata como moeda
-        }
-        else
-        {
-            // Tratar caso as conversões falhem
-            DisplayAlert("Erro", "Valores inv lidos", "OK");
-        }
-    }
-    private void BtnRemove_Clicked(object sender, EventArgs e) 
-    {
-        if (int.TryParse(LblQuantidade.Text, out int quantidade) &&
-            decimal.TryParse(LblProdutoPreco.Text, out decimal precoUnitario))
-        {
-            // Decrementa a quantidade, e não permite que seja menor que 1
-            quantidade = Math.Max(1, quantidade - 1);
-            LblQuantidade.Text = quantidade.ToString();
-
-            // Calcula o preço total
-            var precoTotal = quantidade * precoUnitario;
-            LblPrecoTotal.Text = precoTotal.ToString();
-        }
-        else
-        {
-            // Tratar caso as conversões falhem
-            DisplayAlert("Erro", "Valores inv lidos", "OK");
-        }
-    }
-    private  async void BtnIncluirNoCarrinho_Clicked(object sender, EventArgs e)
+    private async void ImagemBtnFavorito_Clicked(object sender, EventArgs e) 
     {
         try
         {
-            var carrinhoCompra = new CarrinhoCompra()
+            var existeFavorito = await _favoritosService.ReadAsync(_produtoId);
+            if (existeFavorito is not null)
             {
-                Quantidade = Convert.ToInt32(LblQuantidade.Text),
-                PrecoUnitario = Convert.ToDecimal(LblProdutoPreco.Text),
-                ValorTotal = Convert.ToDecimal(LblPrecoTotal.Text),
-                ProdutoId = _produtoId,
-                ClienteId = Preferences.Get("usuarioid", 0)
-            };
-            var response = await _apiService.AdicionaItemNoCarrinho(carrinhoCompra);
-            if (response.Data)
-            {
-                await DisplayAlert("Sucesso", "Item adicionado ao carrinho !", "OK");
-                await Navigation.PopAsync();
+                await _favoritosService.DeleteAsync(existeFavorito);
             }
             else
             {
-                await DisplayAlert("Erro", $"Falha ao adicionar item: {response.ErrorMessage}", "OK");
+                var produtoFavorito = new ProdutoFavorito()
+                {
+                    ProdutoId = _produtoId,
+                    IsFavorito = true,
+                    Detalhe = LblProdutoDescricao.Text,
+                    Nome = LblProdutoNome.Text,
+                    Preco = Convert.ToDecimal(LblProdutoPreco.Text),
+                    ImagemUrl = _imagemUrl
+                };
+
+                await _favoritosService.CreateAsync(produtoFavorito);
             }
+            AtualizaFavoritoButton();
         }
         catch (Exception ex)
         {
             await DisplayAlert("Erro", $"Ocorreu um erro: {ex.Message}", "OK");
         }
+    }
+    private async void AtualizaFavoritoButton()
+    {
+        var existeFavorito = await
+               _favoritosService.ReadAsync(_produtoId);
+
+        if (existeFavorito is not null)
+            ImagemBtnFavorito.Source = "heartfill";
+        else
+            ImagemBtnFavorito.Source = "heart";
+    }
+
+
+    private void BtnAdiciona_Clicked(object sender, EventArgs e)
+    {
+      if (int.TryParse(LblQuantidade.Text, out int quantidade) &&
+      decimal.TryParse(LblProdutoPreco.Text, out decimal precoUnitario))
+    {
+        // Incrementa a quantidade
+        quantidade++;
+        LblQuantidade.Text = quantidade.ToString();
+
+        // Calcula o preço total
+        var precoTotal = quantidade * precoUnitario;
+        LblPrecoTotal.Text = precoTotal.ToString(); // Formata como moeda
+    }
+    else
+    {
+        // Tratar caso as conversões falhem
+        DisplayAlert("Erro", "Valores inv lidos", "OK");
+    }
+    }
+    private void BtnRemove_Clicked(object sender, EventArgs e)
+    {
+    if (int.TryParse(LblQuantidade.Text, out int quantidade) &&
+        decimal.TryParse(LblProdutoPreco.Text, out decimal precoUnitario))
+    {
+        // Decrementa a quantidade, e não permite que seja menor que 1
+        quantidade = Math.Max(1, quantidade - 1);
+        LblQuantidade.Text = quantidade.ToString();
+
+        // Calcula o preço total
+        var precoTotal = quantidade * precoUnitario;
+        LblPrecoTotal.Text = precoTotal.ToString();
+    }
+    else
+    {
+        // Tratar caso as conversões falhem
+        DisplayAlert("Erro", "Valores inv lidos", "OK");
+    }
+    }
+    private async void BtnIncluirNoCarrinho_Clicked(object sender, EventArgs e)
+    {
+    try
+    {
+        var carrinhoCompra = new CarrinhoCompra()
+        {
+            Quantidade = Convert.ToInt32(LblQuantidade.Text),
+            PrecoUnitario = Convert.ToDecimal(LblProdutoPreco.Text),
+            ValorTotal = Convert.ToDecimal(LblPrecoTotal.Text),
+            ProdutoId = _produtoId,
+            ClienteId = Preferences.Get("usuarioid", 0)
+        };
+        var response = await _apiService.AdicionaItemNoCarrinho(carrinhoCompra);
+        if (response.Data)
+        {
+            await DisplayAlert("Sucesso", "Item adicionado ao carrinho !", "OK");
+            await Navigation.PopAsync();
+        }
+        else
+        {
+            await DisplayAlert("Erro", $"Falha ao adicionar item: {response.ErrorMessage}", "OK");
+        }
+    }
+    catch (Exception ex)
+    {
+        await DisplayAlert("Erro", $"Ocorreu um erro: {ex.Message}", "OK");
+    }
 
     }
 
     private async Task DisplayLoginPage()
     {
-        _loginPageDisplayed = true;
+    _loginPageDisplayed = true;
 
-        await Navigation.PushAsync(new LoginPage(_apiService, _validator));
+    await Navigation.PushAsync(new LoginPage(_apiService, _validator));
     }
 }
