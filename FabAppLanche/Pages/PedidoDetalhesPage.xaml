@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FabAppLanche.Pages.PedidoDetalhesPage"
              Title="Detalhes do Pedido">
+    
     <VerticalStackLayout>
 
         <ActivityIndicator x:Name="loadIndicator"
