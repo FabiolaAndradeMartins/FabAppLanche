@@ -9,7 +9,7 @@ namespace FabAppLanche.Models
     public class ImagemPerfil
     {
         public string? UrlImagem { get; set; }
-        public string? CaminhoImagem => AppConfig.BaseUrl + "images/" + UrlImagem;
+        public string? CaminhoImagem => AppConfig.BaseUrl + UrlImagem;
 
     }
 }

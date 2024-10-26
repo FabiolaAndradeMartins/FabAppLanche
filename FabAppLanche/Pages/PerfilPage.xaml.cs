@@ -26,7 +26,7 @@ public partial class PerfilPage : ContentPage
 
     private async Task<string?> GetImagemPerfil()
     {
-        // Obtenha a imagem padr o do AppConfig
+        // Obtenha a imagem padrão do AppConfig
         string imagemPadrao = AppConfig.PerfilImagemPadrao;
 
         var (response, errorMessage) = await _apiService.GetImagemPerfilUsuario();
@@ -65,14 +65,19 @@ public partial class PerfilPage : ContentPage
     }
     private void MinhaConta_Tapped(object sender, TappedEventArgs e)
     {
+        Navigation.PushAsync(new MinhaContaPage(_apiService));
     }
 
     private void Perguntas_Tapped(object sender, TappedEventArgs e)
     {
+        Navigation.PushAsync(new PerguntasPage());
+
     }
 
     private void BtnLogout_Clicked(object sender, EventArgs e)
     {
+        Preferences.Set("accesstoken", string.Empty);
+        Application.Current!.MainPage = new NavigationPage(new LoginPage(_apiService, _validator));
     }
 
     private async Task DisplayLoginPage()

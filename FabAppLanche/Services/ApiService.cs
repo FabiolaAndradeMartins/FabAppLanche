@@ -158,7 +158,7 @@ namespace FabAppLanche.Services
             {
                 var content = new MultipartFormDataContent();
                 content.Add(new ByteArrayContent(imageArray), "imagem", "image.jpg");
-                var response = await PostRequest("api/usuarios/uploadfotousuario", content);
+                var response = await PostRequest("api/Usuarios/uploadfoto", content); //aqui usuario estava no plural
 
                 if (!response.IsSuccessStatusCode)
                 {
